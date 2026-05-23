@@ -14,7 +14,7 @@ class AuthorizationService:
 
     def list_patients(self):
         connection = get_connection()
-        return connection.execute("SELECT id, nombre, documento FROM pacientes ORDER BY nombre").fetchall()
+        return connection.execute("SELECT p.id, p.nombre, p.documento, pl.nombre AS plan_nombre FROM pacientes p LEFT JOIN planes pl ON p.plan_id = pl.id ORDER BY p.nombre").fetchall()
 
     def list_services(self):
         connection = get_connection()

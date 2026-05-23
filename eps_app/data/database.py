@@ -58,7 +58,7 @@ def init_db():
             telefono TEXT,
             email TEXT,
             estado_afiliacion TEXT NOT NULL DEFAULT 'pendiente',
-            plan_id INTEGER,
+            plan_id INTEGER NOT NULL DEFAULT 1,
             FOREIGN KEY(plan_id) REFERENCES planes(id)
         );
 

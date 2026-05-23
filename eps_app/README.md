@@ -103,6 +103,33 @@ Se añadieron además:
 
 En la demo los seeds representan casos concretos para probar cada rama: aprobaciones simples, rechazos por afiliación y solicitudes pendientes que requieren pasos adicionales.
 
+## Servicios por plan (ejemplo)
+
+- **Plan Basico (id 1)**: consultas generales, exámenes de laboratorio y procedimientos de baja complejidad. No cubre procedimientos quirúrgicos importantes ni tratamientos odontológicos especializados.
+
+- **Plan Premium (id 2)**: cubre consultas, exámenes, consultas especializadas y muchos procedimientos (incluye cobertura ampliada para procedimientos de complejidad media y alta). En la muestra soporta `Cirugia Menor` y `Ortopedia` y tiene mayor probabilidad de aprobación según la cadena.
+
+- **Plan Odontologico (id 3)**: especializado en servicios dentales; cubre procedimientos odontológicos como `Endodoncia` y tratamientos dentales que el `Plan Basico` no cubre.
+
+Nota: en este demo la relación entre `plan.cobertura` y `servicio.tipo_servicio` se usa de forma simplificada para decidir cobertura; extiende la lógica en `business/patterns/chain_of_responsibility.py` para reglas reales.
+
+## Significado del `nivel_aprobacion`
+
+El campo `nivel_aprobacion` refleja la severidad y el grado de aprobación que la cadena asigna a una solicitud. Valores típicos en la demo:
+
+- `0` — Pendiente: la solicitud está registrada pero aún no fue procesada/completa.
+- `1` — Rechazada / nivel mínimo: la solicitud no cumple requisitos (p. ej. afiliación suspendida o cobertura inexistente).
+- `2` — Aprobación parcial / revisión: requiere validación adicional por especialista o autorización de segundo nivel.
+- `3` — Aprobación condicional: aprobada con condiciones administrativas (necesita supervisión o documentación complementaria).
+- `4` — Aprobación completa: autorizada sin más requisitos.
+
+Ejemplos en los seeds:
+- `Ana Torres` — solicitud para `Cirugia Menor`: queda `pendiente` (nivel `0`) para demostrar flujo de evaluación.
+- `Jorge Martinez` — solicitud de `Ortopedia`: `pendiente` (nivel `0`) para revisión por especialidad.
+- `Sofia Alvarez` — `Endodoncia`: ejemplo aprobado con `nivel_aprobacion = 4` porque su plan odontológico cubre el servicio.
+
+Estos valores alimentan la UI y permiten comparar rutas del Chain of Responsibility en el demo.
+
 ## Casos de uso soportados
 
 ### 1. Autenticacion de empleados

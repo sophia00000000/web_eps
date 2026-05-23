@@ -14,6 +14,7 @@
       <tr>
         <th>ID</th>
         <th>Paciente</th>
+        <th>Plan</th>
         <th>Documento</th>
         <th>Régimen</th>
         <th>Estado</th>
@@ -25,6 +26,7 @@
       <tr>
         <td>{{ item.id }}</td>
         <td>{{ item.paciente_nombre }}</td>
+        <td>{{ item.plan_nombre or '—' }}</td>
         <td>{{ item.paciente_documento }}</td>
         <td>{{ item.regimen }}</td>
         <td><span class="badge {% if item.estado == 'activa' %}success{% elif item.estado == 'suspendida' %}warning{% else %}danger{% endif %}">{{ item.estado }}</span></td>

@@ -13,7 +13,7 @@
       <label for="paciente_id">Paciente</label>
       <select id="paciente_id" name="paciente_id">
         {% for patient in patients %}
-          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }}</option>
+          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }} - {{ patient['plan_nombre'] or 'Sin plan' }}</option>
         {% endfor %}
       </select>
       <label for="servicio_id">Servicio</label>
@@ -49,6 +49,7 @@
       <tr>
         <th>ID</th>
         <th>Paciente</th>
+        <th>Plan</th>
         <th>Servicio</th>
         <th>Estado</th>
         <th>Nivel</th>
@@ -60,6 +61,7 @@
       <tr>
         <td>{{ item['id'] }}</td>
         <td>{{ item['paciente_nombre'] }}</td>
+        <td>{{ item['plan_nombre'] or '—' }}</td>
         <td>{{ item['servicio_nombre'] }}</td>
         <td><span class="badge {% if item['estado'] == 'aprobada' %}success{% else %}danger{% endif %}">{{ item['estado'] }}</span></td>
         <td>{{ item['nivel_aprobacion'] }}</td>

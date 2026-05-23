@@ -7,9 +7,10 @@ class AffiliationDAO:
         connection = get_connection()
         rows = connection.execute(
             """
-            SELECT a.*, p.nombre AS paciente_nombre, p.documento AS paciente_documento
+            SELECT a.*, p.nombre AS paciente_nombre, p.documento AS paciente_documento, pl.nombre AS plan_nombre
             FROM afiliaciones a
             JOIN pacientes p ON p.id = a.paciente_id
+            LEFT JOIN planes pl ON pl.id = p.plan_id
             ORDER BY a.id DESC
             """
         ).fetchall()
@@ -17,8 +18,9 @@ class AffiliationDAO:
             (lambda affiliation: (
                 setattr(affiliation, "paciente_nombre", row["paciente_nombre"]),
                 setattr(affiliation, "paciente_documento", row["paciente_documento"]),
+                setattr(affiliation, "plan_nombre", row["plan_nombre"]),
                 affiliation,
-            )[2])(
+            )[3])(
             Affiliation(
                 row["id"],
                 row["paciente_id"],
@@ -34,7 +36,7 @@ class AffiliationDAO:
 
     def find_by_id(self, affiliation_id: int):
         connection = get_connection()
-        row = connection.execute("SELECT * FROM afiliaciones WHERE id = ?", (affiliation_id,)).fetchone()
+        row = connection.execute("SELECT a.*, p.nombre AS paciente_nombre, p.documento AS paciente_documento, pl.nombre AS plan_nombre FROM afiliaciones a JOIN pacientes p ON p.id = a.paciente_id LEFT JOIN planes pl ON pl.id = p.plan_id WHERE a.id = ?", (affiliation_id,)).fetchone()
         if not row:
             return None
         affiliation = Affiliation(
@@ -48,6 +50,7 @@ class AffiliationDAO:
         )
         affiliation.paciente_nombre = row["paciente_nombre"]
         affiliation.paciente_documento = row["paciente_documento"]
+        affiliation.plan_nombre = row["plan_nombre"]
         return affiliation
 
     def update_state(self, affiliation_id: int, estado: str, fecha_cancelacion=None):

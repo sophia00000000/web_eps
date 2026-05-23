@@ -6,9 +6,10 @@ class AuthorizationDAO:
         connection = get_connection()
         return connection.execute(
             """
-            SELECT a.*, p.nombre AS paciente_nombre, s.nombre AS servicio_nombre
+            SELECT a.*, p.nombre AS paciente_nombre, s.nombre AS servicio_nombre, pl.nombre AS plan_nombre
             FROM autorizaciones a
             JOIN pacientes p ON p.id = a.paciente_id
+            LEFT JOIN planes pl ON pl.id = p.plan_id
             JOIN servicios s ON s.id = a.servicio_id
             ORDER BY a.id DESC
             """
