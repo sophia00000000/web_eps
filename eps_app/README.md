@@ -48,6 +48,10 @@ La base de datos SQLite se crea automaticamente y se llena con ejemplos para pro
 - `Mariana Gomez` - documento `1002` - afiliacion activa.
 - `Carlos Perez` - documento `1003` - afiliacion suspendida.
 - `Laura Ruiz` - documento `1004` - afiliacion pendiente.
+ - `Ana Torres` - documento `1005` - afiliacion activa - asignada a `Plan Basico`.
+ - `Jorge Martinez` - documento `1006` - afiliacion activa - asignado a `Plan Premium`.
+ - `Sofia Alvarez` - documento `1007` - afiliacion activa - asignada a `Plan Odontologico`.
+ - `Miguel Sanchez` - documento `1008` - afiliacion pendiente - asignado a `Plan Premium`.
 
 ### Afiliaciones
 
@@ -61,6 +65,9 @@ La base de datos SQLite se crea automaticamente y se llena con ejemplos para pro
 - Solicitud aprobada para `Paciente Demo`.
 - Solicitud aprobada para `Mariana Gomez`.
 - Solicitud rechazada para `Carlos Perez` por afiliacion suspendida.
+ - Solicitud pendiente para `Ana Torres` (cirugía menor) — ejemplo de procedimiento que requiere validación de cobertura y niveles.
+ - Solicitud pendiente para `Jorge Martinez` (ortopedia) — ejemplo de evaluación por especialidad.
+ - Solicitud aprobada para `Sofia Alvarez` (endodoncia) — muestra autorización cubierta por plan odontológico.
 
 ### Citas
 
@@ -73,6 +80,28 @@ La base de datos SQLite se crea automaticamente y se llena con ejemplos para pro
 - `Plan Basico`.
 - `Plan Premium`.
 - Servicios cargados: consulta general, triage de urgencias, examen de laboratorio y consulta especializada.
+
+Se añadieron además:
+- `Plan Odontologico` (id 3).
+- Servicios/procedimientos: `Cirugia Menor`, `Ortopedia`, `Endodoncia`.
+
+## Qué permite cada plan y cómo afectan las autorizaciones
+
+- **Plan Basico (id 1)**: cobertura `general`. Cubre consultas generales y exámenes de baja complejidad. Procedimientos de alta complejidad suelen quedar fuera y requerirán autorización adicional o rechazo.
+
+- **Plan Premium (id 2)**: cobertura `amplia`. Cubre consultas, exámenes y muchos procedimientos; incluye cobertura ampliada y `incluye_ortodoncia = 1` en la muestra. Procedimientos de complejidad alta pueden necesitar aprobaciones de niveles superiores (simulado por la cadena).
+
+- **Plan Odontologico (id 3)**: cobertura `odontologia`. Está especializado en servicios dentales (por ejemplo `Endodoncia`) y permite autorizaciones para procedimientos odontológicos que el `Plan Basico` no cubriría.
+
+## Cómo se evalúan las autorizaciones (resumen del Chain of Responsibility)
+
+1. **Validación de documentos**: el primer paso comprueba que el paciente y su documento existan.
+2. **Estado de afiliación**: si la afiliación está `suspendida` o `pendiente`, la solicitud puede ser rechazada o puesta en espera.
+3. **Cobertura por plan**: se verifica si el `plan_id` del paciente y la `cobertura` del plan incluyen el `tipo_servicio` solicitado (p. ej. `odontologia` para `Endodoncia`).
+4. **Requiere especialidad**: algunos servicios necesitan un especialista; si no se cumple, la autorización puede bajar de nivel o rechazarse.
+5. **Aprobación final**: en función del `nivel_complejidad` del servicio se asigna un `nivel_aprobacion` y el resultado final (`aprobada`, `rechazada`, `pendiente`).
+
+En la demo los seeds representan casos concretos para probar cada rama: aprobaciones simples, rechazos por afiliación y solicitudes pendientes que requieren pasos adicionales.
 
 ## Casos de uso soportados
 
