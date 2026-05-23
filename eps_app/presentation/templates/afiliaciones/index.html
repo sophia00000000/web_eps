@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div class="badge">State</div>
+  <h1>Afiliaciones</h1>
+  <p>Controla el estado de cada afiliación y cambia entre activa, suspendida o cancelada sin perder trazabilidad.</p>
+</section>
+
+<section class="card">
+  <h2>Estados cargados</h2>
+  {% if affiliations %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Paciente</th>
+        <th>Documento</th>
+        <th>Régimen</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in affiliations %}
+      <tr>
+        <td>{{ item.id }}</td>
+        <td>{{ item.paciente_nombre }}</td>
+        <td>{{ item.paciente_documento }}</td>
+        <td>{{ item.regimen }}</td>
+        <td><span class="badge {% if item.estado == 'activa' %}success{% elif item.estado == 'suspendida' %}warning{% else %}danger{% endif %}">{{ item.estado }}</span></td>
+        <td>
+          <div class="actions">
+            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='activar') }}"><button type="submit">Activar</button></form>
+            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='suspender') }}"><button class="secondary" type="submit">Suspender</button></form>
+            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='cancelar') }}"><button class="secondary" type="submit">Cancelar</button></form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="empty">No hay afiliaciones registradas.</p>
+  {% endif %}
+</section>
+{% endblock %}

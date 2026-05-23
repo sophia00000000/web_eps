@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EPS App</title>
+  <style>
+    :root {
+      --bg: #eef4f9;
+      --panel: #ffffff;
+      --panel-soft: #f8fbfe;
+      --text: #163049;
+      --muted: #5b6b7d;
+      --primary: #0f4c81;
+      --primary-2: #115d99;
+      --border: #d7e1ea;
+      --success: #1f7a4a;
+      --warning: #b78103;
+      --danger: #a23434;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background:
+        radial-gradient(circle at top right, rgba(15,76,129,.10), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(17,93,153,.08), transparent 26%),
+        var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      padding: 1rem 1.5rem 1.1rem;
+      box-shadow: 0 8px 24px rgba(15,76,129,.18);
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; flex-direction: column; gap: .15rem; }
+    .brand strong { font-size: 1.2rem; letter-spacing: .3px; }
+    .brand span { color: rgba(255,255,255,.82); font-size: .92rem; }
+    nav { display: flex; gap: .5rem; flex-wrap: wrap; }
+    nav a {
+      color: white;
+      text-decoration: none;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.18);
+      padding: .5rem .8rem;
+      border-radius: 999px;
+      font-size: .95rem;
+    }
+    nav a:hover { background: rgba(255,255,255,.22); }
+    main { padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(248,251,254,.98));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.2rem 1.3rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 12px 30px rgba(18,49,74,.06);
+    }
+    .hero h1, .hero h2, .hero p { margin: .2rem 0; }
+    .hero p { color: var(--muted); }
+    .grid { display: grid; gap: 1rem; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 10px 28px rgba(18,49,74,.06);
+    }
+    .card.soft { background: var(--panel-soft); }
+    .card h2, .card h3 { margin-top: 0; }
+    .meta { color: var(--muted); font-size: .95rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .25rem .65rem;
+      border-radius: 999px;
+      background: #eaf2f9;
+      color: var(--primary);
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .2px;
+      margin-right: .35rem;
+    }
+    .badge.success { background: rgba(31,122,74,.12); color: var(--success); }
+    .badge.warning { background: rgba(183,129,3,.12); color: var(--warning); }
+    .badge.danger { background: rgba(162,52,52,.12); color: var(--danger); }
+    .actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+    .actions form { display: inline-block; }
+    input, select, button, textarea {
+      padding: .7rem .9rem;
+      margin: .25rem 0;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      color: var(--text);
+    }
+    label { display: block; font-size: .92rem; color: var(--muted); margin-top: .6rem; }
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    button.secondary { background: #eaf2f9; color: var(--primary); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: .75rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+    .empty { color: var(--muted); padding: .75rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-row">
+      <div class="brand">
+        <strong>EPS App</strong>
+        <span>Panel interno para empleados de autorizaciones, afiliaciones, citas y planes</span>
+      </div>
+      <nav>
+        <a href="/dashboard">Panel</a>
+        <a href="/autorizaciones/">Autorizaciones</a>
+        <a href="/afiliaciones/">Afiliaciones</a>
+        <a href="/citas/">Citas</a>
+        <a href="/planes/">Planes</a>
+        <a href="/logout">Salir</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

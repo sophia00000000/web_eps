@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="grid two">
+  <article class="hero">
+    <div class="badge">Acceso interno</div>
+    <h1>Ingreso de empleados</h1>
+    <p>Usa una cuenta de prueba para entrar al panel y recorrer los módulos de la EPS.</p>
+    <p class="meta">Admin: administra todo. Médico: autorizaciones y citas. Auxiliar: afiliaciones.</p>
+  </article>
+  <article class="card">
+    {% if error %}<p class="badge danger">{{ error }}</p>{% endif %}
+    <form method="post">
+      <label for="username">Usuario</label>
+      <input id="username" name="username" placeholder="admin" autofocus>
+      <label for="password">Clave</label>
+      <input id="password" name="password" type="password" placeholder="admin">
+      <button type="submit">Ingresar</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div class="badge">Visitor</div>
+  <h1>Planes y servicios</h1>
+  <p>Usa un solo conjunto de clases para cotizar, reportar y auditar planes distintos sin cambiar los objetos principales.</p>
+</section>
+
+<section class="grid two">
+  <article class="card">
+    <h2>Cotizaciones</h2>
+    {% for item in cotizaciones %}<p>{{ item }}</p>{% endfor %}
+    <h2>Reportes</h2>
+    {% for item in reportes %}<p>{{ item }}</p>{% endfor %}
+    <h2>Auditoría</h2>
+    {% for item in auditorias %}<p>{{ item }}</p>{% endfor %}
+  </article>
+  <article class="card soft">
+    <h2>Ejemplos de planes</h2>
+    <p class="meta">Incluye planes básicos, complementarios y odontológicos para comparar el comportamiento del visitante.</p>
+    <div class="actions">
+      <span class="badge">Básico</span>
+      <span class="badge success">Complementario</span>
+      <span class="badge warning">Odontológico</span>
+    </div>
+  </article>
+</section>
+
+<section class="card">
+  <h2>Planes en base de datos</h2>
+  {% if db_plans %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Tarifa base</th>
+        <th>Cobertura</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in db_plans %}
+      <tr>
+        <td>{{ item['id'] }}</td>
+        <td>{{ item['nombre'] }}</td>
+        <td>{{ item['tipo'] }}</td>
+        <td>{{ item['tarifa_base'] }}</td>
+        <td>{{ item['cobertura'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  <h2>Servicios</h2>
+  {% if db_services %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Tarifa base</th>
+        <th>Especialidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in db_services %}
+      <tr>
+        <td>{{ item['id'] }}</td>
+        <td>{{ item['nombre'] }}</td>
+        <td>{{ item['tipo_servicio'] }}</td>
+        <td>{{ item['tarifa_base'] }}</td>
+        <td>{{ item['requiere_especialidad'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+{% endblock %}

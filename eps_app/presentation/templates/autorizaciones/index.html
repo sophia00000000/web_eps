@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <div class="badge">Chain of Responsibility</div>
+  <h1>Autorizaciones médicas</h1>
+  <p>Registra una solicitud y el sistema la valida por documentos, afiliación, cobertura, especialidad y aprobación final.</p>
+</section>
+
+<section class="grid two">
+  <article class="card">
+    <h2>Procesar nueva solicitud</h2>
+    <form method="post" action="{{ url_for('authorization.procesar') }}">
+      <label for="paciente_id">Paciente</label>
+      <select id="paciente_id" name="paciente_id">
+        {% for patient in patients %}
+          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }}</option>
+        {% endfor %}
+      </select>
+      <label for="servicio_id">Servicio</label>
+      <select id="servicio_id" name="servicio_id">
+        {% for service in services %}
+          <option value="{{ service['id'] }}">{{ service['nombre'] }} - {{ service['tipo_servicio'] }}</option>
+        {% endfor %}
+      </select>
+      <label for="afiliacion_estado">Estado de afiliación</label>
+      <select id="afiliacion_estado" name="afiliacion_estado">
+        <option value="activa">Activa</option>
+        <option value="suspendida">Suspendida</option>
+        <option value="pendiente">Pendiente</option>
+      </select>
+      <button type="submit">Procesar autorización</button>
+    </form>
+  </article>
+  <article class="card soft">
+    <h2>Ejemplos cargados</h2>
+    <p class="meta">Ya hay autorizaciones aprobadas y rechazadas para comparar resultados.</p>
+    <div class="actions">
+      <span class="badge success">Aprobadas</span>
+      <span class="badge danger">Rechazadas</span>
+    </div>
+  </article>
+</section>
+
+<section class="card">
+  <h2>Historial</h2>
+  {% if authorizations %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Paciente</th>
+        <th>Servicio</th>
+        <th>Estado</th>
+        <th>Nivel</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in authorizations %}
+      <tr>
+        <td>{{ item['id'] }}</td>
+        <td>{{ item['paciente_nombre'] }}</td>
+        <td>{{ item['servicio_nombre'] }}</td>
+        <td><span class="badge {% if item['estado'] == 'aprobada' %}success{% else %}danger{% endif %}">{{ item['estado'] }}</span></td>
+        <td>{{ item['nivel_aprobacion'] }}</td>
+        <td>{{ item['observaciones'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="empty">No hay autorizaciones registradas todavía.</p>
+  {% endif %}
+</section>
+{% endblock %}
