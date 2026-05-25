@@ -8,19 +8,13 @@
 
 <section class="grid two">
   <article class="card">
-    <h2>Acciones Visitor</h2>
     {% if session.get('rol') == 'admin' %}
-      <p class="meta">Elige una sola accion para ver el resultado de Visitor sin mezclar cotizacion, reporte y auditoria en pantalla.</p>
+      <p class="meta">Elige una sola accion para ver el resultado de Visitor.</p>
       <form method="post" action="{{ url_for('plan.accion') }}" class="actions">
         <button type="submit" name="accion" value="cotizar">Cotizar valores</button>
         <button type="submit" name="accion" value="reportar" class="secondary">Generar reporte</button>
         <button type="submit" name="accion" value="auditar" class="secondary">Ejecutar auditoría</button>
       </form>
-      <div class="actions">
-        <span class="badge {% if accion_seleccionada == 'cotizar' %}success{% endif %} {% if accion_seleccionada is none %}warning{% endif %}">Cotizar</span>
-        <span class="badge {% if accion_seleccionada == 'reportar' %}success{% endif %} {% if accion_seleccionada is none %}warning{% endif %}">Reportar</span>
-        <span class="badge {% if accion_seleccionada == 'auditar' %}success{% endif %} {% if accion_seleccionada is none %}warning{% endif %}">Auditar</span>
-      </div>
       {% if resultado_titulo %}
         <h3>{{ resultado_titulo }}</h3>
         <p class="meta">{{ resultado_descripcion }}</p>
@@ -64,7 +58,6 @@
           </table>
         {% endif %}
       {% else %}
-        <p class="empty">Pulsa uno de los botones para ver un resultado claro de Visitor.</p>
       {% endif %}
     {% else %}
       <p class="empty">Tu rol solo permite consulta de planes y coberturas. Las acciones Visitor quedan reservadas al administrador.</p>
@@ -72,11 +65,10 @@
   </article>
 
   <article class="card soft">
-    <h2>Qué hace cada botón</h2>
+    <h2>Acciones</h2>
     <p><strong>Cotizar valores:</strong> calcula el precio estimado de cada plan.</p>
     <p><strong>Generar reporte:</strong> devuelve una descripción resumida del plan.</p>
     <p><strong>Ejecutar auditoría:</strong> marca cada plan como revisado en la demostración.</p>
-    <p class="meta">Esta pantalla separa la lógica del Visitor para que sea más fácil de explicar y comparar en clase.</p>
   </article>
  
 </section>

@@ -24,7 +24,7 @@ class AppointmentService:
     def list_medicos(self):
         connection = get_connection()
         return connection.execute(
-            "SELECT id, username, rol FROM usuarios WHERE rol = 'medico' AND activo = 1 ORDER BY username"
+            "SELECT id, 'medico' AS username, rol FROM usuarios WHERE rol = 'medico' AND activo = 1 ORDER BY username"
         ).fetchall()
 
     def schedule_appointment(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str = "cita"):
