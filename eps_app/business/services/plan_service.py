@@ -22,12 +22,12 @@ class PlanService:
 
     def cotizar(self):
         visitor = VisitorCotizacion()
-        return [plan.aceptar(visitor) for plan in self.all_plans()]
+        return [plan.accept(visitor) for plan in self.all_plans()]
 
     def reportar(self):
         visitor = VisitorReporte()
-        return [plan.aceptar(visitor) for plan in self.all_plans()]
+        return [plan.accept(visitor) for plan in self.all_plans()]
 
     def auditar(self):
         visitor = VisitorAuditoria()
-        return [plan.aceptar(visitor) for plan in self.all_plans()]
+        return [plan.accept(visitor) for plan in self.all_plans()]

@@ -5,40 +5,61 @@ from typing import final
 
 class AtencionMedicaTemplate(ABC):
     @final
+    def procesarAtencion(self, paciente, medico):
+        self.registrarPaciente(paciente)
+        self.validarAfiliacion(paciente)
+        self.asignarMedico(medico)
+        self.realizarAtencion()
+        self.generarDiagnostico()
+        return self.generarFactura()
+
     def procesar_atencion(self, paciente, medico):
-        self.registrar_paciente(paciente)
-        self.validar_afiliacion(paciente)
-        self.asignar_medico(medico)
-        self.realizar_atencion()
-        self.generar_diagnostico()
-        return self.generar_factura()
+        return self.procesarAtencion(paciente, medico)
+
+    def registrarPaciente(self, paciente):
+        return paciente
 
     def registrar_paciente(self, paciente):
+        return self.registrarPaciente(paciente)
+
+    def validarAfiliacion(self, paciente):
         return paciente
 
     def validar_afiliacion(self, paciente):
-        return paciente
+        return self.validarAfiliacion(paciente)
 
-    def asignar_medico(self, medico):
+    def asignarMedico(self, medico):
         return medico
 
-    @abstractmethod
-    def realizar_atencion(self):
-        raise NotImplementedError
+    def asignar_medico(self, medico):
+        return self.asignarMedico(medico)
 
     @abstractmethod
-    def generar_diagnostico(self):
+    def realizarAtencion(self):
         raise NotImplementedError
+
+    def realizar_atencion(self):
+        return self.realizarAtencion()
+
+    @abstractmethod
+    def generarDiagnostico(self):
+        raise NotImplementedError
+
+    def generar_diagnostico(self):
+        return self.generarDiagnostico()
+
+    def generarFactura(self):
+        return {"fecha": date.today().isoformat(), "total": 0.0}
 
     def generar_factura(self):
-        return {"fecha": date.today().isoformat(), "total": 0.0}
+        return self.generarFactura()
 
 
 class CitaMedica(AtencionMedicaTemplate):
-    def realizar_atencion(self):
+    def realizarAtencion(self):
         return "Consulta programada"
 
-    def generar_diagnostico(self):
+    def generarDiagnostico(self):
         return "Diagnostico de cita"
 
 
@@ -46,10 +67,10 @@ class UrgenciaMedica(AtencionMedicaTemplate):
     def clasificar_triage(self):
         return "prioridad inmediata"
 
-    def realizar_atencion(self):
+    def realizarAtencion(self):
         return self.clasificar_triage()
 
-    def generar_diagnostico(self):
+    def generarDiagnostico(self):
         return "Diagnostico de urgencia"
 
 
@@ -57,8 +78,8 @@ class HospitalizacionMedica(AtencionMedicaTemplate):
     def asignar_habitacion(self):
         return "Habitacion asignada"
 
-    def realizar_atencion(self):
+    def realizarAtencion(self):
         return self.asignar_habitacion()
 
-    def generar_diagnostico(self):
+    def generarDiagnostico(self):
         return "Diagnostico de hospitalizacion"

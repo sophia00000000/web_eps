@@ -21,13 +21,16 @@ class Plan:
     tarifa_base: float
     cobertura: str
 
-    def aceptar(self, visitor: PlanVisitor):
+    def accept(self, visitor: PlanVisitor):
         raise NotImplementedError
+
+    def aceptar(self, visitor: PlanVisitor):
+        return self.accept(visitor)
 
 
 @dataclass
 class PlanBasico(Plan):
-    def aceptar(self, visitor: PlanVisitor):
+    def accept(self, visitor: PlanVisitor):
         return visitor.visit_plan_basico(self)
 
 
@@ -35,7 +38,7 @@ class PlanBasico(Plan):
 class PlanComplementario(Plan):
     servicios_extra: list[str] | None = None
 
-    def aceptar(self, visitor: PlanVisitor):
+    def accept(self, visitor: PlanVisitor):
         return visitor.visit_plan_complementario(self)
 
 
@@ -43,5 +46,5 @@ class PlanComplementario(Plan):
 class PlanOdontologico(Plan):
     incluye_ortodoncia: bool = False
 
-    def aceptar(self, visitor: PlanVisitor):
+    def accept(self, visitor: PlanVisitor):
         return visitor.visit_plan_odontologico(self)

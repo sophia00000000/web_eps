@@ -12,6 +12,17 @@ class AuthorizationRequest:
     fecha_solicitud: date = date.today()
     observaciones: str = ""
 
+    def aprobar(self):
+        self.estado = "aprobada"
+
+    def rechazar(self, motivo: str):
+        self.estado = "rechazada"
+        self.observaciones = motivo
+
+    def actualizarEstado(self, estado: str, observaciones: str = ""):
+        self.estado = estado
+        self.observaciones = observaciones
+
 
 class Handler:
     def __init__(self):
@@ -21,17 +32,22 @@ class Handler:
         self._next = handler
         return handler
 
+    def setSiguiente(self, handler):
+        return self.set_next(handler)
+
     def process(self, authorization: AuthorizationRequest):
         if self._next:
             return self._next.process(authorization)
         return authorization
 
+    def procesar(self, authorization: AuthorizationRequest):
+        return self.process(authorization)
+
 
 class DocumentValidator(Handler):
     def process(self, authorization: AuthorizationRequest):
         if not authorization.paciente_id:
-            authorization.estado = "rechazada"
-            authorization.observaciones = "Paciente sin identificacion valida"
+            authorization.rechazar("Paciente sin identificacion valida")
             return authorization
         return super().process(authorization)
 
@@ -43,8 +59,7 @@ class AffiliationValidator(Handler):
 
     def process(self, authorization: AuthorizationRequest):
         if self.affiliation_status != "activa":
-            authorization.estado = "rechazada"
-            authorization.observaciones = "Afiliacion no activa"
+            authorization.rechazar("Afiliacion no activa")
             return authorization
         authorization.nivel_aprobacion = 1
         return super().process(authorization)
@@ -57,8 +72,7 @@ class CoverageValidator(Handler):
 
     def process(self, authorization: AuthorizationRequest):
         if authorization.servicio_id not in self.covered_services:
-            authorization.estado = "rechazada"
-            authorization.observaciones = "Servicio no cubierto"
+            authorization.rechazar("Servicio no cubierto")
             return authorization
         authorization.nivel_aprobacion = 2
         return super().process(authorization)
@@ -71,8 +85,7 @@ class SpecialistValidator(Handler):
 
     def process(self, authorization: AuthorizationRequest):
         if self.required_level > 3:
-            authorization.estado = "rechazada"
-            authorization.observaciones = "Especialidad no valida"
+            authorization.rechazar("Especialidad no valida")
             return authorization
         authorization.nivel_aprobacion = 3
         return super().process(authorization)
@@ -80,15 +93,24 @@ class SpecialistValidator(Handler):
 
 class FinalApprovalValidator(Handler):
     def process(self, authorization: AuthorizationRequest):
-        authorization.estado = "aprobada"
+        authorization.aprobar()
         authorization.nivel_aprobacion = 4
         return authorization
 
 
 def build_authorization_chain(affiliation_status: str = "activa", covered_services: Optional[set[int]] = None):
     first = DocumentValidator()
-    second = first.set_next(AffiliationValidator(affiliation_status))
-    third = second.set_next(CoverageValidator(covered_services))
-    fourth = third.set_next(SpecialistValidator())
-    fourth.set_next(FinalApprovalValidator())
+    second = first.setSiguiente(AffiliationValidator(affiliation_status))
+    third = second.setSiguiente(CoverageValidator(covered_services))
+    fourth = third.setSiguiente(SpecialistValidator())
+    fourth.setSiguiente(FinalApprovalValidator())
     return first
+
+
+Autorizacion = AuthorizationRequest
+HandlerAutorizacion = Handler
+ValidadorDocumentos = DocumentValidator
+ValidadorAfiliacion = AffiliationValidator
+ValidadorCobertura = CoverageValidator
+ValidadorEspecialista = SpecialistValidator
+ValidadorAuth = FinalApprovalValidator

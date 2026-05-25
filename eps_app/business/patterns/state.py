@@ -88,6 +88,9 @@ class AfiliacionContexto:
     def set_estado(self, estado):
         self.estado = estado
 
+    def setEstado(self, estado):
+        self.set_estado(estado)
+
     def activar(self):
         self.estado.activar(self)
 
@@ -99,3 +102,6 @@ class AfiliacionContexto:
 
     def validar_servicios(self) -> bool:
         return self.estado.validar_servicios()
+
+
+Afiliacion = AfiliacionContexto
