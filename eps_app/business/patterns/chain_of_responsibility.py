@@ -53,7 +53,7 @@ class AffiliationValidator(Handler):
 class CoverageValidator(Handler):
     def __init__(self, covered_services: Optional[set[int]] = None):
         super().__init__()
-        self.covered_services = covered_services or {1, 2}
+        self.covered_services = covered_services or set()
 
     def process(self, authorization: AuthorizationRequest):
         if authorization.servicio_id not in self.covered_services:
@@ -85,10 +85,10 @@ class FinalApprovalValidator(Handler):
         return authorization
 
 
-def build_authorization_chain(affiliation_status: str = "activa"):
+def build_authorization_chain(affiliation_status: str = "activa", covered_services: Optional[set[int]] = None):
     first = DocumentValidator()
     second = first.set_next(AffiliationValidator(affiliation_status))
-    third = second.set_next(CoverageValidator())
+    third = second.set_next(CoverageValidator(covered_services))
     fourth = third.set_next(SpecialistValidator())
     fourth.set_next(FinalApprovalValidator())
     return first

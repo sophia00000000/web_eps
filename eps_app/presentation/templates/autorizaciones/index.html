@@ -13,9 +13,10 @@
       <label for="paciente_id">Paciente</label>
       <select id="paciente_id" name="paciente_id">
         {% for patient in patients %}
-          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }} - {{ patient['plan_nombre'] or 'Sin plan' }}</option>
+          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }} - {{ patient['plan_nombre'] or 'Sin plan' }}{% if patient['plan_tipo'] %} ({{ coverage_description_for_plan(patient['plan_tipo']) }}){% endif %}</option>
         {% endfor %}
       </select>
+      <p class="meta">La validación de cobertura depende del plan del paciente. Si eliges un servicio fuera de ese alcance, la solicitud se rechaza por cobertura.</p>
       <label for="servicio_id">Servicio</label>
       <select id="servicio_id" name="servicio_id">
         {% for service in services %}
@@ -56,7 +57,15 @@
         <td>{{ item['paciente_nombre'] }}</td>
         <td>{{ item['plan_nombre'] or '—' }}</td>
         <td>{{ item['servicio_nombre'] }}</td>
-        <td><span class="badge {% if item['estado'] == 'aprobada' %}success{% else %}danger{% endif %}">{{ item['estado'] }}</span></td>
+        <td>
+          {% if item['estado'] == 'pendiente' and item['observaciones'] == 'Pendiente por revision adicional' %}
+            <span class="badge warning">Pendiente por revisión adicional</span>
+          {% elif item['estado'] == 'aprobada' %}
+            <span class="badge success">aprobada</span>
+          {% else %}
+            <span class="badge danger">{{ item['estado'] }}</span>
+          {% endif %}
+        </td>
         <td>{{ item['nivel_aprobacion'] }}</td>
         <td>{{ item['observaciones'] }}</td>
       </tr>

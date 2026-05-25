@@ -28,19 +28,28 @@ class AppointmentDAO:
                 row["estado"],
                 row["diagnostico"],
                 row["factura_total"],
+                row["motivo_consulta"],
+                row["observaciones"],
+                row["triage"],
+                row["signos_vitales"],
+                row["intervenciones"],
+                row["habitacion"],
+                row["fecha_ingreso"],
+                row["fecha_alta"],
             )
             )
             for row in rows
         ]
+    
 
-    def create(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str, estado: str, diagnostico: str, factura_total: float):
+    def create(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str, estado: str, diagnostico: str, factura_total: float, motivo_consulta: str | None = None, observaciones: str | None = None, triage: str | None = None, signos_vitales: str | None = None, intervenciones: str | None = None, habitacion: str | None = None, fecha_ingreso: str | None = None, fecha_alta: str | None = None):
         connection = get_connection()
         cursor = connection.execute(
             """
-            INSERT INTO citas (paciente_id, medico, fecha, tipo_atencion, estado, diagnostico, factura_total)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO citas (paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, triage, signos_vitales, intervenciones, habitacion, fecha_ingreso, fecha_alta, factura_total)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (paciente_id, medico, fecha, tipo_atencion, estado, diagnostico, factura_total),
+            (paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, triage, signos_vitales, intervenciones, habitacion, fecha_ingreso, fecha_alta, factura_total),
         )
         connection.commit()
         return cursor.lastrowid

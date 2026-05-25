@@ -101,7 +101,15 @@ def init_db():
             fecha TEXT NOT NULL,
             tipo_atencion TEXT NOT NULL,
             estado TEXT NOT NULL,
+            motivo_consulta TEXT,
             diagnostico TEXT,
+            observaciones TEXT,
+            triage TEXT,
+            signos_vitales TEXT,
+            intervenciones TEXT,
+            habitacion TEXT,
+            fecha_ingreso TEXT,
+            fecha_alta TEXT,
             factura_total REAL NOT NULL DEFAULT 0,
             FOREIGN KEY(paciente_id) REFERENCES pacientes(id)
         );
@@ -222,13 +230,13 @@ def init_db():
 
     # Citas de ejemplo
     cursor.execute(
-        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, diagnostico, factura_total) VALUES (1, 1, 'Dra. Lopez', date('now', '+1 day'), 'cita', 'programada', 'Control general', 20000)"
+        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, factura_total) VALUES (1, 1, 'Dra. Lopez', date('now', '+1 day'), 'cita', 'programada', 'Control general', 'Control general', NULL, 20000)"
     )
     cursor.execute(
-        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, diagnostico, factura_total) VALUES (2, 2, 'Dr. Vargas', date('now'), 'urgencia', 'atendida', 'Triage y estabilizacion', 45000)"
+        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, triage, signos_vitales, factura_total) VALUES (2, 2, 'Dr. Vargas', date('now'), 'urgencia', 'atendida', 'Dolor abdominal', 'Triage y estabilizacion', 'Observado', 'Naranja', 'TA:120/80,FC:98', 45000)"
     )
     cursor.execute(
-        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, diagnostico, factura_total) VALUES (3, 3, 'Dr. Molina', date('now', '+2 day'), 'hospitalizacion', 'programada', 'Ingreso para observacion', 150000)"
+        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, habitacion, fecha_ingreso, factura_total) VALUES (3, 3, 'Dr. Molina', date('now', '+2 day'), 'hospitalizacion', 'programada', 'Observación postoperatoria', 'Ingreso para observacion', NULL, 'Sala 3', date('now','+2 day'), 150000)"
     )
 
     connection.commit()

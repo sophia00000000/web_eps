@@ -10,7 +10,7 @@ plan_service = PlanService()
 
 @plan_bp.route("/")
 @login_required
-@role_required("admin")
+@role_required("admin", "auxiliar")
 def index():
     return render_page()
 
@@ -23,15 +23,29 @@ def accion():
 
 
 def render_page(accion_seleccionada: str | None = None):
-    cotizaciones = plan_service.cotizar() if accion_seleccionada in (None, "cotizar") else []
-    reportes = plan_service.reportar() if accion_seleccionada in (None, "reportar") else []
-    auditorias = plan_service.auditar() if accion_seleccionada in (None, "auditar") else []
+    resultado_titulo = None
+    resultado_descripcion = None
+    resultado_items = []
+
+    if accion_seleccionada == "cotizar":
+        resultado_titulo = "Cotización de planes"
+        resultado_descripcion = "Visitor calcula el valor estimado de cada plan."
+        resultado_items = plan_service.cotizar()
+    elif accion_seleccionada == "reportar":
+        resultado_titulo = "Reporte de planes"
+        resultado_descripcion = "Visitor genera un texto descriptivo por cada plan."
+        resultado_items = plan_service.reportar()
+    elif accion_seleccionada == "auditar":
+        resultado_titulo = "Auditoría de planes"
+        resultado_descripcion = "Visitor marca cada plan como revisado para la demo educativa."
+        resultado_items = plan_service.auditar()
+
     return render_template(
         "planes/index.html",
         accion_seleccionada=accion_seleccionada,
-        cotizaciones=cotizaciones,
-        reportes=reportes,
-        auditorias=auditorias,
+        resultado_titulo=resultado_titulo,
+        resultado_descripcion=resultado_descripcion,
+        resultado_items=resultado_items,
         db_plans=plan_service.list_db_plans(),
         db_services=plan_service.list_db_services(),
     )

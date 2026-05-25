@@ -27,20 +27,64 @@
         <option value="urgencia">Urgencia inmediata</option>
         <option value="hospitalizacion">Hospitalización</option>
       </select>
+      <div id="campos_clinicos" style="margin-top:.6rem">
+        <div id="campo_motivo">
+          <label for="motivo_consulta">Motivo de la consulta</label>
+          <input id="motivo_consulta" name="motivo_consulta" type="text">
+        </div>
+        <div id="campo_observaciones">
+          <label for="observaciones">Observaciones / Indicaciones</label>
+          <textarea id="observaciones" name="observaciones" rows="3"></textarea>
+        </div>
+        <div id="campo_triage" style="display:none">
+          <label for="triage">Nivel de triage</label>
+          <select id="triage" name="triage">
+            <option value="">--</option>
+            <option value="verde">Verde</option>
+            <option value="amarillo">Amarillo</option>
+            <option value="naranja">Naranja</option>
+            <option value="rojo">Rojo</option>
+          </select>
+        </div>
+        <div id="campo_signos" style="display:none">
+          <label for="signos_vitales">Signos vitales</label>
+          <input id="signos_vitales" name="signos_vitales" type="text" placeholder="TA:120/80, FC:80, FR:16">
+        </div>
+        <div id="campo_intervenciones" style="display:none">
+          <label for="intervenciones">Intervenciones realizadas</label>
+          <textarea id="intervenciones" name="intervenciones" rows="2"></textarea>
+        </div>
+        <div id="campo_habitacion" style="display:none">
+          <label for="habitacion">Habitación asignada</label>
+          <input id="habitacion" name="habitacion" type="text">
+        </div>
+        <div id="campo_fecha_ingreso" style="display:none">
+          <label for="fecha_ingreso">Fecha de ingreso</label>
+          <input id="fecha_ingreso" name="fecha_ingreso" type="date">
+        </div>
+        <div id="campo_fecha_alta" style="display:none">
+          <label for="fecha_alta">Fecha probable de alta</label>
+          <input id="fecha_alta" name="fecha_alta" type="date">
+        </div>
+      </div>
+      <script>
+        function updateClinicalFields() {
+          var tipo = document.getElementById('tipo_atencion').value;
+          document.getElementById('campo_triage').style.display = (tipo==='urgencia') ? 'block' : 'none';
+          document.getElementById('campo_signos').style.display = (tipo==='urgencia') ? 'block' : 'none';
+          document.getElementById('campo_intervenciones').style.display = (tipo==='urgencia') ? 'block' : 'none';
+          document.getElementById('campo_habitacion').style.display = (tipo==='hospitalizacion') ? 'block' : 'none';
+          document.getElementById('campo_fecha_ingreso').style.display = (tipo==='hospitalizacion') ? 'block' : 'none';
+          document.getElementById('campo_fecha_alta').style.display = (tipo==='hospitalizacion') ? 'block' : 'none';
+        }
+        document.getElementById('tipo_atencion').addEventListener('change', updateClinicalFields);
+        window.addEventListener('load', updateClinicalFields);
+      </script>
       <button type="submit">Procesar atención</button>
     </form>
     {% else %}
       <p class="empty">Solo el médico puede procesar atenciones. Como admin puedes revisar el historial, pero no ejecutar el paso clínico del Template Method.</p>
     {% endif %}
-  </article>
-  <article class="card soft">
-    <h2>Casos de prueba</h2>
-    <p class="meta">Ya hay citas de ejemplo para que veas el flujo de atención en distintos contextos clínicos.</p>
-    <div class="actions">
-      <span class="badge">Cita</span>
-      <span class="badge warning">Urgencia</span>
-      <span class="badge success">Hospitalización</span>
-    </div>
   </article>
 </section>
 
@@ -52,6 +96,7 @@
       <tr>
         <th>ID</th>
         <th>Paciente</th>
+        <th>Documento</th>
         <th>Médico</th>
         <th>Fecha</th>
         <th>Tipo</th>

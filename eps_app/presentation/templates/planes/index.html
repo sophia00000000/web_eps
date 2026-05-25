@@ -9,29 +9,74 @@
 <section class="grid two">
   <article class="card">
     <h2>Acciones Visitor</h2>
-    <p class="meta">Usa los botones para ejecutar cada visitante sobre la colección de planes educativos.</p>
-    <form method="post" action="{{ url_for('plan.accion') }}" class="actions">
-      <button type="submit" name="accion" value="cotizar">Cotizar planes</button>
-      <button type="submit" name="accion" value="reportar" class="secondary">Generar reportes</button>
-      <button type="submit" name="accion" value="auditar" class="secondary">Auditar planes</button>
-    </form>
-    <div class="actions">
-      <span class="badge {% if accion_seleccionada == 'cotizar' or accion_seleccionada is none %}success{% endif %}">Cotización</span>
-      <span class="badge {% if accion_seleccionada == 'reportar' or accion_seleccionada is none %}warning{% endif %}">Reporte</span>
-      <span class="badge {% if accion_seleccionada == 'auditar' or accion_seleccionada is none %}danger{% endif %}">Auditoría</span>
-    </div>
-    {% if cotizaciones %}
-      <h3>Cotizaciones</h3>
-      {% for item in cotizaciones %}<p>{{ item }}</p>{% endfor %}
+    {% if session.get('rol') == 'admin' %}
+      <p class="meta">Elige una sola accion para ver el resultado de Visitor sin mezclar cotizacion, reporte y auditoria en pantalla.</p>
+      <form method="post" action="{{ url_for('plan.accion') }}" class="actions">
+        <button type="submit" name="accion" value="cotizar">Cotizar valores</button>
+        <button type="submit" name="accion" value="reportar" class="secondary">Generar reporte</button>
+        <button type="submit" name="accion" value="auditar" class="secondary">Ejecutar auditoría</button>
+      </form>
+      <div class="actions">
+        <span class="badge {% if accion_seleccionada == 'cotizar' %}success{% endif %} {% if accion_seleccionada is none %}warning{% endif %}">Cotizar</span>
+        <span class="badge {% if accion_seleccionada == 'reportar' %}success{% endif %} {% if accion_seleccionada is none %}warning{% endif %}">Reportar</span>
+        <span class="badge {% if accion_seleccionada == 'auditar' %}success{% endif %} {% if accion_seleccionada is none %}warning{% endif %}">Auditar</span>
+      </div>
+      {% if resultado_titulo %}
+        <h3>{{ resultado_titulo }}</h3>
+        <p class="meta">{{ resultado_descripcion }}</p>
+        {% if accion_seleccionada == 'cotizar' %}
+          <table>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Valor estimado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in resultado_items %}
+              <tr>
+                <td>{{ item['plan'] }}</td>
+                <td>{{ item['valor'] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% elif accion_seleccionada == 'reportar' %}
+          {% for item in resultado_items %}
+            <p>{{ item }}</p>
+          {% endfor %}
+        {% elif accion_seleccionada == 'auditar' %}
+          <table>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Estado de auditoría</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in resultado_items %}
+              <tr>
+                <td>{{ item['plan'] }}</td>
+                <td>{% if item['auditoria'] %}Revisado{% else %}Pendiente{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      {% else %}
+        <p class="empty">Pulsa uno de los botones para ver un resultado claro de Visitor.</p>
+      {% endif %}
+    {% else %}
+      <p class="empty">Tu rol solo permite consulta de planes y coberturas. Las acciones Visitor quedan reservadas al administrador.</p>
     {% endif %}
-    {% if reportes %}
-      <h3>Reportes</h3>
-      {% for item in reportes %}<p>{{ item }}</p>{% endfor %}
-    {% endif %}
-    {% if auditorias %}
-      <h3>Auditoría</h3>
-      {% for item in auditorias %}<p>{{ item }}</p>{% endfor %}
-    {% endif %}
+  </article>
+
+  <article class="card soft">
+    <h2>Qué hace cada botón</h2>
+    <p><strong>Cotizar valores:</strong> calcula el precio estimado de cada plan.</p>
+    <p><strong>Generar reporte:</strong> devuelve una descripción resumida del plan.</p>
+    <p><strong>Ejecutar auditoría:</strong> marca cada plan como revisado en la demostración.</p>
+    <p class="meta">Esta pantalla separa la lógica del Visitor para que sea más fácil de explicar y comparar en clase.</p>
   </article>
  
 </section>
