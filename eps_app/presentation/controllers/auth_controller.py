@@ -39,6 +39,7 @@ def login():
         user = auth_service.login(request.form["username"], request.form["password"])
         if user:
             session["user_id"] = user.id
+            session["username"] = user.username
             session["rol"] = user.rol
             return redirect(url_for("auth.dashboard"))
         error = "Credenciales invalidas"

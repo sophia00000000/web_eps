@@ -132,10 +132,18 @@
       </div>
       <nav>
         <a href="/dashboard">Panel</a>
-        <a href="/autorizaciones/">Autorizaciones</a>
-        <a href="/afiliaciones/">Afiliaciones</a>
-        <a href="/citas/">Citas</a>
-        <a href="/planes/">Planes</a>
+        {% if session.get('rol') in ['admin', 'medico'] %}
+          <a href="/autorizaciones/">Autorizaciones</a>
+        {% endif %}
+        {% if session.get('rol') in ['admin', 'auxiliar'] %}
+          <a href="/afiliaciones/">Afiliaciones</a>
+        {% endif %}
+        {% if session.get('rol') in ['admin', 'medico'] %}
+          <a href="/citas/">Citas</a>
+        {% endif %}
+        {% if session.get('rol') == 'admin' %}
+          <a href="/planes/">Planes</a>
+        {% endif %}
         <a href="/logout">Salir</a>
       </nav>
     </div>

@@ -9,6 +9,7 @@
 <section class="grid two">
   <article class="card">
     <h2>Registrar atención</h2>
+    {% if puede_procesar %}
     <form method="post" action="{{ url_for('appointment.procesar') }}">
       <label for="paciente_id">Paciente</label>
       <select id="paciente_id" name="paciente_id">
@@ -17,11 +18,7 @@
         {% endfor %}
       </select>
       <label for="medico">Médico</label>
-      <select id="medico" name="medico">
-        {% for doctor in medicos %}
-          <option value="{{ doctor['username'] }}">{{ doctor['username'] }} ({{ doctor['rol'] }})</option>
-        {% endfor %}
-      </select>
+      <input id="medico" name="medico" type="text" value="{{ medico_actual }}" readonly>
       <label for="fecha">Fecha</label>
       <input id="fecha" name="fecha" type="date">
       <label for="tipo_atencion">Tipo de atención</label>
@@ -32,6 +29,9 @@
       </select>
       <button type="submit">Procesar atención</button>
     </form>
+    {% else %}
+      <p class="empty">Solo el médico puede procesar atenciones. Como admin puedes revisar el historial, pero no ejecutar el paso clínico del Template Method.</p>
+    {% endif %}
   </article>
   <article class="card soft">
     <h2>Casos de prueba</h2>

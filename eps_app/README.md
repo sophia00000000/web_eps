@@ -38,6 +38,22 @@ La aplicacion trabaja con usuarios de empleado:
 - `medico` / `medico`
 - `auxiliar` / `auxiliar`
 
+## Roles y casos de uso recomendados
+
+La pagina tiene fines educativos, asi que conviene separar los casos de uso por rol para observar mejor cada patron:
+
+| Rol | Puede hacer | No puede hacer |
+| --- | --- | --- |
+| Admin | Ver panel general, gestionar afiliaciones, cotizar y auditar planes, revisar autorizaciones, crear usuarios y revisar citas | Procesar atenciones medicas |
+| Medico | Procesar citas, urgencias e hospitalizacion, registrar diagnostico, solicitar autorizaciones, ver planes del paciente | Gestionar usuarios y editar coberturas de planes |
+| Auxiliar | Registrar solicitudes de autorizacion, consultar estados, agendar citas, ver planes disponibles, asignar paciente a plan | Procesar el paso clinico de la atencion |
+
+- **Admin**: administracion general del sistema. Puede crear o revisar coberturas de planes con Visitor, cotizar todos los planes, auditar planes y servicios, gestionar afiliaciones con State, activar, suspender o cancelar afiliaciones, ver historial de autorizaciones con Chain, crear usuarios y asignar roles, y ver el panel general. No debe procesar atenciones medicas.
+- **Medico**: evaluacion clinica. Puede procesar cita, urgencia y hospitalizacion con Template Method, ver citas agendadas, registrar diagnostico y observaciones, solicitar autorizaciones con Chain y consultar planes del paciente en solo lectura.
+- **Auxiliar**: soporte operativo. Puede registrar solicitudes de autorizacion, consultar estado de autorizacion y afiliacion, agendar cita para paciente, ver planes disponibles con Visitor, asignar paciente a plan y revisar historial de atenciones.
+
+En esta version, la atencion medica se procesa solo con el medico correspondiente y el campo medico queda fijado al usuario autenticado. El admin puede revisar las citas, pero no ejecutar el paso clinico.
+
 ## Datos de ejemplo cargados
 
 La base de datos SQLite se crea automaticamente y se llena con ejemplos para probar el flujo completo.
@@ -48,10 +64,10 @@ La base de datos SQLite se crea automaticamente y se llena con ejemplos para pro
 - `Mariana Gomez` - documento `1002` - afiliacion activa.
 - `Carlos Perez` - documento `1003` - afiliacion suspendida.
 - `Laura Ruiz` - documento `1004` - afiliacion pendiente.
- - `Ana Torres` - documento `1005` - afiliacion activa - asignada a `Plan Basico`.
- - `Jorge Martinez` - documento `1006` - afiliacion activa - asignado a `Plan Premium`.
- - `Sofia Alvarez` - documento `1007` - afiliacion activa - asignada a `Plan Odontologico`.
- - `Miguel Sanchez` - documento `1008` - afiliacion pendiente - asignado a `Plan Premium`.
+- `Ana Torres` - documento `1005` - afiliacion activa - asignada a `Plan Basico`.
+- `Jorge Martinez` - documento `1006` - afiliacion activa - asignado a `Plan Premium`.
+- `Sofia Alvarez` - documento `1007` - afiliacion activa - asignada a `Plan Odontologico`.
+- `Miguel Sanchez` - documento `1008` - afiliacion pendiente - asignado a `Plan Premium`.
 
 ### Afiliaciones
 
@@ -65,9 +81,9 @@ La base de datos SQLite se crea automaticamente y se llena con ejemplos para pro
 - Solicitud aprobada para `Paciente Demo`.
 - Solicitud aprobada para `Mariana Gomez`.
 - Solicitud rechazada para `Carlos Perez` por afiliacion suspendida.
- - Solicitud pendiente para `Ana Torres` (cirugía menor) — ejemplo de procedimiento que requiere validación de cobertura y niveles.
- - Solicitud pendiente para `Jorge Martinez` (ortopedia) — ejemplo de evaluación por especialidad.
- - Solicitud aprobada para `Sofia Alvarez` (endodoncia) — muestra autorización cubierta por plan odontológico.
+- Solicitud pendiente para `Ana Torres` (cirugia menor) — ejemplo de procedimiento que requiere validacion de cobertura y niveles.
+- Solicitud pendiente para `Jorge Martinez` (ortopedia) — ejemplo de evaluacion por especialidad.
+- Solicitud aprobada para `Sofia Alvarez` (endodoncia) — muestra autorizacion cubierta por plan odontologico.
 
 ### Citas
 
@@ -87,11 +103,11 @@ Se añadieron además:
 
 ## Qué permite cada plan y cómo afectan las autorizaciones
 
-- **Plan Basico (id 1)**: cobertura `general`. Cubre consultas generales y exámenes de baja complejidad. Procedimientos de alta complejidad suelen quedar fuera y requerirán autorización adicional o rechazo.
+**Plan Basico (id 1)**: cobertura `general`. Soporta consultas generales y examenes de baja complejidad como `Consulta General` y `Examen de Laboratorio`. Procedimientos de alta complejidad suelen quedar fuera y requeriran autorizacion adicional o rechazo.
 
-- **Plan Premium (id 2)**: cobertura `amplia`. Cubre consultas, exámenes y muchos procedimientos; incluye cobertura ampliada y `incluye_ortodoncia = 1` en la muestra. Procedimientos de complejidad alta pueden necesitar aprobaciones de niveles superiores (simulado por la cadena).
+**Plan Premium (id 2)**: cobertura `amplia`. Soporta `Consulta General`, `Examen de Laboratorio`, `Consulta Especializada`, `Cirugia Menor` y `Ortopedia` en la muestra. Incluye cobertura ampliada y `incluye_ortodoncia = 1`, por lo que varios procedimientos pasan la validacion de cobertura y luego se revisan por nivel de aprobacion.
 
-- **Plan Odontologico (id 3)**: cobertura `odontologia`. Está especializado en servicios dentales (por ejemplo `Endodoncia`) y permite autorizaciones para procedimientos odontológicos que el `Plan Basico` no cubriría.
+**Plan Odontologico (id 3)**: cobertura `odontologia`. Esta especializado en servicios dentales; cubre procedimientos odontologicos como `Endodoncia` y tratamientos dentales que el `Plan Basico` no cubre.
 
 ## Cómo se evalúan las autorizaciones (resumen del Chain of Responsibility)
 
@@ -138,7 +154,7 @@ Permite ingresar al panel con usuario y clave. El sistema muestra el acceso segu
 
 ### 2. Validacion de autorizaciones
 
-El usuario medico o admin puede procesar una solicitud. La cadena valida:
+El usuario medico puede procesar una solicitud. El admin puede ver el historial, pero no ejecutar el flujo clinico. La cadena valida:
 
 1. Documentos.
 2. Afiliacion.
@@ -156,13 +172,13 @@ El usuario admin o auxiliar puede ver las afiliaciones y cambiar su estado a:
 
 ### 4. Atencion de citas medicas
 
-El usuario medico o admin puede registrar una atencion como:
+El usuario medico puede registrar una atencion como:
 
 - cita programada
 - urgencia
 - hospitalizacion
 
-El flujo comun se ejecuta con Template Method y cada tipo redefine sus pasos variables.
+El flujo comun se ejecuta con Template Method y cada tipo redefine sus pasos variables. El medico asignado es el usuario autenticado; la fecha y hora se aceptan como dato de registro y no bloquean el procesamiento en el demo.
 
 ### 5. Gestion de planes y servicios
 

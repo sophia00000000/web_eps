@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from business.services.appointment_service import AppointmentService
 from presentation.controllers.auth_controller import login_required, role_required
@@ -17,17 +17,18 @@ def index():
         "citas/index.html",
         appointments=appointments,
         patients=appointment_service.list_patients(),
-        medicos=appointment_service.list_medicos(),
+        medico_actual=session.get("username"),
+        puede_procesar=session.get("rol") == "medico",
     )
 
 
 @appointment_bp.route("/procesar", methods=["POST"])
 @login_required
-@role_required("medico", "admin")
+@role_required("medico")
 def procesar():
     appointment_service.process_and_store(
         int(request.form["paciente_id"]),
-        request.form["medico"],
+        session.get("username", request.form["medico"]),
         request.form["fecha"],
         request.form["tipo_atencion"],
     )
