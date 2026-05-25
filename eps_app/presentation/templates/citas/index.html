@@ -8,7 +8,7 @@
 
 <section class="grid two">
   <article class="card">
-    <h2>Registrar atención</h2>
+    <h2>{% if puede_procesar %}Registrar atención{% elif puede_agendar %}Agendar cita{% else %}Atención médica{% endif %}</h2>
     {% if puede_procesar %}
     <form method="post" action="{{ url_for('appointment.procesar') }}">
       <label for="paciente_id">Paciente</label>
@@ -82,8 +82,33 @@
       </script>
       <button type="submit">Procesar atención</button>
     </form>
+    {% elif puede_agendar %}
+    <form method="post" action="{{ url_for('appointment.agendar') }}">
+      <label for="paciente_id">Paciente</label>
+      <select id="paciente_id" name="paciente_id">
+        {% for patient in patients %}
+          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }}</option>
+        {% endfor %}
+      </select>
+      <label for="medico">Médico asignado</label>
+      <select id="medico" name="medico">
+        {% for medico in medicos %}
+          <option value="{{ medico['username'] }}">{{ medico['username'] }}</option>
+        {% endfor %}
+      </select>
+      <label for="fecha">Fecha de cita</label>
+      <input id="fecha" name="fecha" type="date">
+      <label for="tipo_atencion">Tipo de atención</label>
+      <select id="tipo_atencion" name="tipo_atencion">
+        <option value="cita">Cita programada</option>
+        <option value="urgencia">Urgencia programada</option>
+        <option value="hospitalizacion">Hospitalización programada</option>
+      </select>
+      <p class="meta">El auxiliar puede programar la cita, pero el procesamiento clínico seguirá siendo exclusivo del médico.</p>
+      <button type="submit">Agendar cita</button>
+    </form>
     {% else %}
-      <p class="empty">Solo el médico puede procesar atenciones. Como admin puedes revisar el historial, pero no ejecutar el paso clínico del Template Method.</p>
+      <p class="empty">Solo el médico puede procesar atenciones. Si tu rol es auxiliar, aquí verás el historial y podrás agendar citas.</p>
     {% endif %}
   </article>
 </section>

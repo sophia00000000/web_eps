@@ -24,8 +24,19 @@ class AppointmentService:
     def list_medicos(self):
         connection = get_connection()
         return connection.execute(
-            "SELECT id, username, rol FROM usuarios WHERE rol IN ('medico', 'admin') AND activo = 1 ORDER BY username"
+            "SELECT id, username, rol FROM usuarios WHERE rol = 'medico' AND activo = 1 ORDER BY username"
         ).fetchall()
+
+    def schedule_appointment(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str = "cita"):
+        return self.appointment_dao.create(
+            paciente_id=paciente_id,
+            medico=medico,
+            fecha=fecha,
+            tipo_atencion=tipo_atencion,
+            estado="programada",
+            diagnostico="",
+            factura_total=0.0,
+        )
 
     def process_and_store(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str, motivo_consulta: str | None = None, observaciones: str | None = None, triage: str | None = None, signos_vitales: str | None = None, intervenciones: str | None = None, habitacion: str | None = None, fecha_ingreso: str | None = None, fecha_alta: str | None = None):
         strategy = self.get_strategy(tipo_atencion)

@@ -10,16 +10,31 @@ appointment_service = AppointmentService()
 
 @appointment_bp.route("/")
 @login_required
-@role_required("medico", "admin")
+@role_required("medico", "admin", "auxiliar")
 def index():
     appointments = appointment_service.list_appointments()
     return render_template(
         "citas/index.html",
         appointments=appointments,
         patients=appointment_service.list_patients(),
+        medicos=appointment_service.list_medicos(),
         medico_actual=session.get("username"),
         puede_procesar=session.get("rol") == "medico",
+        puede_agendar=session.get("rol") in ("auxiliar", "admin"),
     )
+
+
+@appointment_bp.route("/agendar", methods=["POST"])
+@login_required
+@role_required("auxiliar", "admin")
+def agendar():
+    appointment_service.schedule_appointment(
+        int(request.form["paciente_id"]),
+        request.form["medico"],
+        request.form["fecha"],
+        request.form.get("tipo_atencion", "cita"),
+    )
+    return redirect(url_for("appointment.index"))
 
 
 @appointment_bp.route("/procesar", methods=["POST"])

@@ -138,7 +138,7 @@
         {% if session.get('rol') in ['admin', 'auxiliar'] %}
           <a href="/afiliaciones/">Afiliaciones</a>
         {% endif %}
-        {% if session.get('rol') in ['admin', 'medico'] %}
+        {% if session.get('rol') in ['admin', 'medico', 'auxiliar'] %}
           <a href="/citas/">Citas</a>
         {% endif %}
         {% if session.get('rol') in ['admin', 'auxiliar'] %}
