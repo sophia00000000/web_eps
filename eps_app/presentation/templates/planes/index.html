@@ -8,22 +8,32 @@
 
 <section class="grid two">
   <article class="card">
-    <h2>Cotizaciones</h2>
-    {% for item in cotizaciones %}<p>{{ item }}</p>{% endfor %}
-    <h2>Reportes</h2>
-    {% for item in reportes %}<p>{{ item }}</p>{% endfor %}
-    <h2>Auditoría</h2>
-    {% for item in auditorias %}<p>{{ item }}</p>{% endfor %}
-  </article>
-  <article class="card soft">
-    <h2>Ejemplos de planes</h2>
-    <p class="meta">Incluye planes básicos, complementarios y odontológicos para comparar el comportamiento del visitante.</p>
+    <h2>Acciones Visitor</h2>
+    <p class="meta">Usa los botones para ejecutar cada visitante sobre la colección de planes educativos.</p>
+    <form method="post" action="{{ url_for('plan.accion') }}" class="actions">
+      <button type="submit" name="accion" value="cotizar">Cotizar planes</button>
+      <button type="submit" name="accion" value="reportar" class="secondary">Generar reportes</button>
+      <button type="submit" name="accion" value="auditar" class="secondary">Auditar planes</button>
+    </form>
     <div class="actions">
-      <span class="badge">Básico</span>
-      <span class="badge success">Complementario</span>
-      <span class="badge warning">Odontológico</span>
+      <span class="badge {% if accion_seleccionada == 'cotizar' or accion_seleccionada is none %}success{% endif %}">Cotización</span>
+      <span class="badge {% if accion_seleccionada == 'reportar' or accion_seleccionada is none %}warning{% endif %}">Reporte</span>
+      <span class="badge {% if accion_seleccionada == 'auditar' or accion_seleccionada is none %}danger{% endif %}">Auditoría</span>
     </div>
+    {% if cotizaciones %}
+      <h3>Cotizaciones</h3>
+      {% for item in cotizaciones %}<p>{{ item }}</p>{% endfor %}
+    {% endif %}
+    {% if reportes %}
+      <h3>Reportes</h3>
+      {% for item in reportes %}<p>{{ item }}</p>{% endfor %}
+    {% endif %}
+    {% if auditorias %}
+      <h3>Auditoría</h3>
+      {% for item in auditorias %}<p>{{ item }}</p>{% endfor %}
+    {% endif %}
   </article>
+ 
 </section>
 
 <section class="card">
