@@ -4,29 +4,39 @@
   <div class="badge">Template Method</div>
   <h1>Atención médica</h1>
   <p>Procesa citas, urgencias y hospitalización usando el mismo flujo general, con pasos variables por tipo de atención.</p>
-</section>
-
-<section class="grid two">
   <article class="card">
-    <h2>{% if puede_procesar %}Registrar atención{% elif puede_agendar %}Agendar cita{% else %}Atención médica{% endif %}</h2>
+    <h2>Registrar atención</h2>
     {% if puede_procesar %}
     <form method="post" action="{{ url_for('appointment.procesar') }}">
-      <label for="paciente_id">Paciente</label>
-      <select id="paciente_id" name="paciente_id">
-        {% for patient in patients %}
-          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }}</option>
-        {% endfor %}
-      </select>
       <label for="medico">Médico</label>
       <input id="medico" name="medico" type="text" value="{{ medico_actual }}" readonly>
-      <label for="fecha">Fecha</label>
-      <input id="fecha" name="fecha" type="date">
       <label for="tipo_atencion">Tipo de atención</label>
       <select id="tipo_atencion" name="tipo_atencion">
         <option value="cita">Cita programada</option>
-        <option value="urgencia">Urgencia inmediata</option>
+        <option value="urgencia">Urgencia</option>
         <option value="hospitalizacion">Hospitalización</option>
       </select>
+      <div id="cita_programada_fields">
+        <label for="cita_id">Cita programada</label>
+        <select id="cita_id" name="cita_id">
+          <option value="">-- Selecciona una cita programada --</option>
+          {% for cita in scheduled_appointments %}
+            <option value="{{ cita.id }}">#{{ cita.id }} - {{ cita.paciente_nombre }} - {{ cita.fecha }}</option>
+          {% endfor %}
+        </select>
+        <label for="fecha">Fecha de atención</label>
+        <input id="fecha" name="fecha" type="date">
+      </div>
+      <div id="atencion_directa_fields" style="display:none">
+        <label for="paciente_id">Paciente</label>
+        <select id="paciente_id" name="paciente_id">
+          {% for patient in patients %}
+            <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }}</option>
+          {% endfor %}
+        </select>
+        <label for="fecha_directa">Fecha de atención</label>
+        <input id="fecha_directa" name="fecha_directa" type="date">
+      </div>
       <div id="campos_clinicos" style="margin-top:.6rem">
         <div id="campo_motivo">
           <label for="motivo_consulta">Motivo de la consulta</label>
@@ -70,15 +80,17 @@
       <script>
         function updateClinicalFields() {
           var tipo = document.getElementById('tipo_atencion').value;
-          document.getElementById('campo_triage').style.display = (tipo==='urgencia') ? 'block' : 'none';
-          document.getElementById('campo_signos').style.display = (tipo==='urgencia') ? 'block' : 'none';
-          document.getElementById('campo_intervenciones').style.display = (tipo==='urgencia') ? 'block' : 'none';
-          document.getElementById('campo_habitacion').style.display = (tipo==='hospitalizacion') ? 'block' : 'none';
-          document.getElementById('campo_fecha_ingreso').style.display = (tipo==='hospitalizacion') ? 'block' : 'none';
-          document.getElementById('campo_fecha_alta').style.display = (tipo==='hospitalizacion') ? 'block' : 'none';
+          document.getElementById('cita_programada_fields').style.display = (tipo === 'cita') ? 'block' : 'none';
+          document.getElementById('atencion_directa_fields').style.display = (tipo === 'cita') ? 'none' : 'block';
+          document.getElementById('campo_triage').style.display = (tipo === 'urgencia') ? 'block' : 'none';
+          document.getElementById('campo_signos').style.display = (tipo === 'urgencia') ? 'block' : 'none';
+          document.getElementById('campo_intervenciones').style.display = (tipo === 'urgencia') ? 'block' : 'none';
+          document.getElementById('campo_habitacion').style.display = (tipo === 'hospitalizacion') ? 'block' : 'none';
+          document.getElementById('campo_fecha_ingreso').style.display = (tipo === 'hospitalizacion') ? 'block' : 'none';
+          document.getElementById('campo_fecha_alta').style.display = (tipo === 'hospitalizacion') ? 'block' : 'none';
         }
+        document.addEventListener('DOMContentLoaded', updateClinicalFields);
         document.getElementById('tipo_atencion').addEventListener('change', updateClinicalFields);
-        window.addEventListener('load', updateClinicalFields);
       </script>
       <button type="submit">Procesar atención</button>
     </form>

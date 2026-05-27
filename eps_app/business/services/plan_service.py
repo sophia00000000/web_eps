@@ -26,7 +26,14 @@ class PlanService:
 
     def reportar(self):
         visitor = VisitorReporte()
-        return [plan.accept(visitor) for plan in self.all_plans()]
+        return [
+            {
+                "plan": plan.nombre,
+                "cobertura": plan.cobertura,
+                "reporte": plan.accept(visitor),
+            }
+            for plan in self.all_plans()
+        ]
 
     def auditar(self):
         visitor = VisitorAuditoria()

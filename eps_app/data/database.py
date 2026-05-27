@@ -68,8 +68,11 @@ def init_db():
             eps_nombre TEXT NOT NULL,
             regimen TEXT NOT NULL,
             estado TEXT NOT NULL,
+            estado_anterior TEXT,
             fecha_afiliacion TEXT,
             fecha_cancelacion TEXT,
+            motivo_modificacion TEXT,
+            fecha_modificacion TEXT,
             FOREIGN KEY(paciente_id) REFERENCES pacientes(id)
         );
 
@@ -236,7 +239,7 @@ def init_db():
         "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, triage, signos_vitales, factura_total) VALUES (2, 2, 'Dr. Vargas', date('now'), 'urgencia', 'atendida', 'Dolor abdominal', 'Triage y estabilizacion', 'Observado', 'Naranja', 'TA:120/80,FC:98', 45000)"
     )
     cursor.execute(
-        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, habitacion, fecha_ingreso, factura_total) VALUES (3, 3, 'Dr. Molina', date('now', '+2 day'), 'hospitalizacion', 'programada', 'Observación postoperatoria', 'Ingreso para observacion', NULL, 'Sala 3', date('now','+2 day'), 150000)"
+        "INSERT OR IGNORE INTO citas (id, paciente_id, medico, fecha, tipo_atencion, estado, motivo_consulta, diagnostico, observaciones, habitacion, fecha_ingreso, factura_total) VALUES (3, 3, 'Dr. Molina', date('now', '+2 day'), 'cita', 'programada', 'Observación postoperatoria', 'Ingreso para observacion', NULL, 'Sala 3', date('now','+2 day'), 150000)"
     )
 
     connection.commit()

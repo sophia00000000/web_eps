@@ -20,5 +20,9 @@ def index():
 @login_required
 @role_required("admin", "auxiliar")
 def change_state(affiliation_id, action):
-    affiliation_service.change_state(affiliation_id, action)
+    affiliation_service.change_state(
+        affiliation_id,
+        action,
+        request.form.get("motivo_modificacion")
+    )
     return redirect(url_for("affiliation.index"))

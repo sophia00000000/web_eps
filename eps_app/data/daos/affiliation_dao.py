@@ -14,14 +14,9 @@ class AffiliationDAO:
             ORDER BY a.id DESC
             """
         ).fetchall()
-        return [
-            (lambda affiliation: (
-                setattr(affiliation, "paciente_nombre", row["paciente_nombre"]),
-                setattr(affiliation, "paciente_documento", row["paciente_documento"]),
-                setattr(affiliation, "plan_nombre", row["plan_nombre"]),
-                affiliation,
-            )[3])(
-            Affiliation(
+        affiliations = []
+        for row in rows:
+            affiliation = Affiliation(
                 row["id"],
                 row["paciente_id"],
                 row["eps_nombre"],
@@ -30,9 +25,14 @@ class AffiliationDAO:
                 row["fecha_afiliacion"],
                 row["fecha_cancelacion"],
             )
-            )
-            for row in rows
-        ]
+            affiliation.paciente_nombre = row["paciente_nombre"]
+            affiliation.paciente_documento = row["paciente_documento"]
+            affiliation.plan_nombre = row["plan_nombre"]
+            affiliation.estado_anterior = row["estado_anterior"]
+            affiliation.motivo_modificacion = row["motivo_modificacion"]
+            affiliation.fecha_modificacion = row["fecha_modificacion"]
+            affiliations.append(affiliation)
+        return affiliations
 
     def find_by_id(self, affiliation_id: int):
         connection = get_connection()
@@ -51,13 +51,24 @@ class AffiliationDAO:
         affiliation.paciente_nombre = row["paciente_nombre"]
         affiliation.paciente_documento = row["paciente_documento"]
         affiliation.plan_nombre = row["plan_nombre"]
+        affiliation.estado_anterior = row["estado_anterior"]
+        affiliation.motivo_modificacion = row["motivo_modificacion"]
+        affiliation.fecha_modificacion = row["fecha_modificacion"]
         return affiliation
 
-    def update_state(self, affiliation_id: int, estado: str, fecha_cancelacion=None):
+    def update_state(self, affiliation_id: int, estado: str, fecha_cancelacion=None, motivo_modificacion: str | None = None):
         connection = get_connection()
         connection.execute(
-            "UPDATE afiliaciones SET estado = ?, fecha_cancelacion = COALESCE(?, fecha_cancelacion) WHERE id = ?",
-            (estado, fecha_cancelacion, affiliation_id),
+            """
+            UPDATE afiliaciones
+            SET estado = ?,
+                estado_anterior = (SELECT estado FROM afiliaciones WHERE id = ?),
+                fecha_cancelacion = COALESCE(?, fecha_cancelacion),
+                motivo_modificacion = ?,
+                fecha_modificacion = date('now')
+            WHERE id = ?
+            """,
+            (estado, affiliation_id, fecha_cancelacion, motivo_modificacion, affiliation_id),
         )
         connection.execute(
             "UPDATE pacientes SET estado_afiliacion = ? WHERE id = (SELECT paciente_id FROM afiliaciones WHERE id = ?)",

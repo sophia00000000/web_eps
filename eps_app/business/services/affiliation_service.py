@@ -20,7 +20,7 @@ class AffiliationService:
     def list_affiliations(self):
         return self.affiliation_dao.list_all()
 
-    def change_state(self, affiliation_id: int, action: str):
+    def change_state(self, affiliation_id: int, action: str, motivo_modificacion: str | None = None):
         affiliation = self.affiliation_dao.find_by_id(affiliation_id)
         if not affiliation:
             return None
@@ -37,6 +37,7 @@ class AffiliationService:
             affiliation_id,
             context.estado.__class__.__name__.replace("Afiliacion", "").lower(),
             context.fecha_cancelacion.isoformat() if context.fecha_cancelacion else None,
+            motivo_modificacion,
         )
         return context
 

@@ -15,32 +15,79 @@
         <th>ID</th>
         <th>Paciente</th>
         <th>Plan</th>
-        <th>Documento</th>
         <th>Régimen</th>
         <th>Estado</th>
-        <th>Acciones</th>
+        <th style="width:260px">Acciones</th>
       </tr>
     </thead>
     <tbody>
       {% for item in affiliations %}
-      <tr>
-        <td>{{ item.id }}</td>
-        <td>{{ item.paciente_nombre }}</td>
-        <td>{{ item.plan_nombre or '—' }}</td>
-        <td>{{ item.paciente_documento }}</td>
-        <td>{{ item.regimen }}</td>
-        <td><span class="badge {% if item.estado == 'activa' %}success{% elif item.estado == 'suspendida' %}warning{% else %}danger{% endif %}">{{ item.estado }}</span></td>
+      <tr class="main-row">
+        <td class="muted">{{ item.id }}</td>
         <td>
-          <div class="actions">
-            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='activar') }}"><button type="submit">Activar</button></form>
-            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='suspender') }}"><button class="secondary" type="submit">Suspender</button></form>
-            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='cancelar') }}"><button class="secondary" type="submit">Cancelar</button></form>
+          <strong>{{ item.paciente_nombre }}</strong>
+          <div class="meta">Documento: {{ item.paciente_documento }}</div>
+        </td>
+        <td>{{ item.plan_nombre or '—' }}</td>
+        <td>{{ item.regimen }}</td>
+        <td>
+          <span class="badge {% if item.estado == 'activa' %}success{% elif item.estado == 'suspendida' %}warning{% else %}danger{% endif %}">{{ item.estado }}</span>
+        </td>
+        <td>
+          <div class="actions" style="justify-content:flex-end">
+            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='activar') }}" class="action-form">
+              <button type="submit" title="Activar afiliación" class="btn-activate">Activar</button>
+            </form>
+            <div style="width:8px"></div>
+            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='suspender') }}" class="action-form">
+              <input type="text" name="motivo_modificacion" placeholder="Motivo suspensión" class="reason-input" aria-label="Motivo suspensión">
+              <button type="button" class="btn-suspend">Suspender</button>
+            </form>
+            <div style="width:8px"></div>
+            <form method="post" action="{{ url_for('affiliation.change_state', affiliation_id=item.id, action='cancelar') }}" class="action-form">
+              <input type="text" name="motivo_modificacion" placeholder="Motivo cancelación" class="reason-input" aria-label="Motivo cancelación">
+              <button type="button" class="btn-cancel">Cancelar</button>
+            </form>
+          </div>
+          <div class="detail meta" style="margin-top:.5rem">
+            <div>Estado anterior: <strong>{{ item.estado_anterior or '—' }}</strong></div>
+            <div>Última modificación: {{ item.fecha_modificacion or '—' }}</div>
+            <div>Motivo: {{ item.motivo_modificacion or '—' }}</div>
           </div>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  <style>
+    .btn-activate { padding: .55rem .8rem; }
+    .btn-suspend { padding: .55rem .8rem; background: linear-gradient(135deg, var(--accent), rgba(196,106,45,.85)); color: white; border-radius: 10px; border: 0; }
+    .btn-cancel { padding: .55rem .8rem; background: linear-gradient(135deg, #a75246, #8c4f4a); color: white; border-radius: 10px; border: 0; }
+    .reason-input { width: 100%; margin-bottom: .35rem; }
+    .detail { color: var(--muted); font-size: .92rem; }
+    tr.main-row td { vertical-align: middle; }
+  </style>
+
+  <script>
+    document.addEventListener('click', function(e) {
+      // Suspend action
+      if (e.target.matches('.btn-suspend') || e.target.matches('.btn-cancel')) {
+        e.preventDefault();
+        var form = e.target.closest('form');
+        var input = form.querySelector('input[name="motivo_modificacion"]');
+        var motivo = input ? input.value.trim() : '';
+        if (!motivo) {
+          input.focus();
+          alert('Por favor ingrese el motivo antes de continuar.');
+          return;
+        }
+        var verb = e.target.matches('.btn-suspend') ? 'suspender' : 'cancelar';
+        if (confirm('Confirma que desea ' + verb + ' la afiliación?')) {
+          form.submit();
+        }
+      }
+    });
+  </script>
   {% else %}
     <p class="empty">No hay afiliaciones registradas.</p>
   {% endif %}

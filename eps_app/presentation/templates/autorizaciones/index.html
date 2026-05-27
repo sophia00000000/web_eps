@@ -6,14 +6,14 @@
   <p>Registra una solicitud y el sistema la valida por documentos, afiliación, cobertura, especialidad y aprobación final.</p>
 </section>
 
-<section class="grid two">
+<section class="card">
   <article class="card">
     <h2>Procesar nueva solicitud</h2>
     <form method="post" action="{{ url_for('authorization.procesar') }}">
       <label for="paciente_id">Paciente</label>
       <select id="paciente_id" name="paciente_id">
         {% for patient in patients %}
-          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }} - {{ patient['plan_nombre'] or 'Sin plan' }}{% if patient['plan_tipo'] %} ({{ coverage_description_for_plan(patient['plan_tipo']) }}){% endif %}</option>
+          <option value="{{ patient['id'] }}">{{ patient['nombre'] }} - {{ patient['documento'] }} - {{ patient['plan_nombre'] or 'Sin plan' }}</option>
         {% endfor %}
       </select>
       <p class="meta">La validación de cobertura depende del plan del paciente. Si eliges un servicio fuera de ese alcance, la solicitud se rechaza por cobertura.</p>

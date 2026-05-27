@@ -8,12 +8,14 @@
 
 <section class="grid two">
   <article class="card">
-    {% if session.get('rol') == 'admin' %}
+    {% if session.get('rol') in ['admin', 'auxiliar'] %}
       <p class="meta">Elige una sola accion para ver el resultado de Visitor.</p>
       <form method="post" action="{{ url_for('plan.accion') }}" class="actions">
         <button type="submit" name="accion" value="cotizar">Cotizar valores</button>
         <button type="submit" name="accion" value="reportar" class="secondary">Generar reporte</button>
-        <button type="submit" name="accion" value="auditar" class="secondary">Ejecutar auditoría</button>
+        {% if session.get('rol') == 'admin' %}
+          <button type="submit" name="accion" value="auditar" class="secondary">Ejecutar auditoría</button>
+        {% endif %}
       </form>
       {% if resultado_titulo %}
         <h3>{{ resultado_titulo }}</h3>
@@ -36,22 +38,43 @@
             </tbody>
           </table>
         {% elif accion_seleccionada == 'reportar' %}
-          {% for item in resultado_items %}
-            <p>{{ item }}</p>
-          {% endfor %}
-        {% elif accion_seleccionada == 'auditar' %}
           <table>
             <thead>
               <tr>
                 <th>Plan</th>
-                <th>Estado de auditoría</th>
+                <th>Cobertura</th>
+                <th>Reporte</th>
               </tr>
             </thead>
             <tbody>
               {% for item in resultado_items %}
               <tr>
                 <td>{{ item['plan'] }}</td>
-                <td>{% if item['auditoria'] %}Revisado{% else %}Pendiente{% endif %}</td>
+                <td>{{ item['cobertura'] }}</td>
+                <td>{{ item['reporte'] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% elif accion_seleccionada == 'auditar' %}
+          <table>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Estado</th>
+                <th>Revisado por</th>
+                <th>Fecha revisión</th>
+                <th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in resultado_items %}
+              <tr>
+                <td>{{ item['plan'] }}</td>
+                <td>{% if item['auditoria'] %}<span class="badge success">Revisado</span>{% else %}<span class="badge warning">Pendiente</span>{% endif %}</td>
+                <td>{{ item['revisado_por'] or '—' }}</td>
+                <td>{{ item['fecha_revision'] or '—' }}</td>
+                <td>{{ item['observaciones'] or '—' }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -60,14 +83,14 @@
       {% else %}
       {% endif %}
     {% else %}
-      <p class="empty">Tu rol solo permite consulta de planes y coberturas. Las acciones Visitor quedan reservadas al administrador.</p>
+      <p class="empty">Tu rol permite consultar, cotizar y generar reportes de planes. La auditoría sigue reservada al administrador.</p>
     {% endif %}
   </article>
 
   <article class="card soft">
     <h2>Acciones</h2>
     <p><strong>Cotizar valores:</strong> calcula el precio estimado de cada plan.</p>
-    <p><strong>Generar reporte:</strong> devuelve una descripción resumida del plan.</p>
+    <p><strong>Generar reporte:</strong> devuelve una descripción resumida del plan mostrando también su cobertura.</p>
     <p><strong>Ejecutar auditoría:</strong> marca cada plan como revisado en la demostración.</p>
   </article>
  

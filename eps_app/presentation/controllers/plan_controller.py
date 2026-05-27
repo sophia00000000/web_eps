@@ -17,7 +17,7 @@ def index():
 
 @plan_bp.route("/accion", methods=["POST"])
 @login_required
-@role_required("admin")
+@role_required("admin", "auxiliar")
 def accion():
     return render_page(request.form.get("accion", "cotizar"))
 
@@ -33,7 +33,7 @@ def render_page(accion_seleccionada: str | None = None):
         resultado_items = plan_service.cotizar()
     elif accion_seleccionada == "reportar":
         resultado_titulo = "Reporte de planes"
-        resultado_descripcion = "Visitor genera un texto descriptivo por cada plan."
+        resultado_descripcion = "Visitor genera un texto descriptivo por cada plan con su cobertura."
         resultado_items = plan_service.reportar()
     elif accion_seleccionada == "auditar":
         resultado_titulo = "Auditoría de planes"

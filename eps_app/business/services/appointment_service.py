@@ -17,6 +17,9 @@ class AppointmentService:
     def list_appointments(self):
         return self.appointment_dao.list_all()
 
+    def list_scheduled_for_medico(self, medico_username: str):
+        return self.appointment_dao.list_scheduled_for_medico(medico_username)
+
     def list_patients(self):
         connection = get_connection()
         return connection.execute("SELECT id, nombre, documento FROM pacientes ORDER BY nombre").fetchall()
@@ -38,25 +41,41 @@ class AppointmentService:
             factura_total=0.0,
         )
 
-    def process_and_store(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str, motivo_consulta: str | None = None, observaciones: str | None = None, triage: str | None = None, signos_vitales: str | None = None, intervenciones: str | None = None, habitacion: str | None = None, fecha_ingreso: str | None = None, fecha_alta: str | None = None):
+    def process_and_store(self, paciente_id: int, medico: str, fecha: str, tipo_atencion: str, motivo_consulta: str | None = None, observaciones: str | None = None, triage: str | None = None, signos_vitales: str | None = None, intervenciones: str | None = None, habitacion: str | None = None, fecha_ingreso: str | None = None, fecha_alta: str | None = None, cita_id: int | None = None):
         strategy = self.get_strategy(tipo_atencion)
         factura = strategy.procesar_atencion(f"Paciente {paciente_id}", medico)
         diagnostico = strategy.generar_diagnostico()
-        appointment_id = self.appointment_dao.create(
-            paciente_id=paciente_id,
-            medico=medico,
-            fecha=fecha,
-            tipo_atencion=tipo_atencion,
-            estado="atendida",
-            diagnostico=diagnostico,
-            factura_total=float(factura["total"]),
-            motivo_consulta=motivo_consulta,
-            observaciones=observaciones,
-            triage=triage,
-            signos_vitales=signos_vitales,
-            intervenciones=intervenciones,
-            habitacion=habitacion,
-            fecha_ingreso=fecha_ingreso,
-            fecha_alta=fecha_alta,
-        )
+        if tipo_atencion == "cita" and cita_id is not None:
+            appointment_id = cita_id
+            self.appointment_dao.update_to_attended(
+                appointment_id,
+                diagnostico,
+                float(factura["total"]),
+                motivo_consulta,
+                observaciones,
+                triage,
+                signos_vitales,
+                intervenciones,
+                habitacion,
+                fecha_ingreso,
+                fecha_alta,
+            )
+        else:
+            appointment_id = self.appointment_dao.create(
+                paciente_id=paciente_id,
+                medico=medico,
+                fecha=fecha,
+                tipo_atencion=tipo_atencion,
+                estado="atendida",
+                diagnostico=diagnostico,
+                factura_total=float(factura["total"]),
+                motivo_consulta=motivo_consulta,
+                observaciones=observaciones,
+                triage=triage,
+                signos_vitales=signos_vitales,
+                intervenciones=intervenciones,
+                habitacion=habitacion,
+                fecha_ingreso=fecha_ingreso,
+                fecha_alta=fecha_alta,
+            )
         return appointment_id, diagnostico, factura
